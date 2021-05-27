@@ -16,9 +16,9 @@ sudo pip3 install --user gmpy2==2.1.0a2
 sudo pip3 install ecdsa[gmpy2]
 
 Windows
-https://www.lfd.uci.edu/~gohlke/pythonlibs/
-gmpy2‑2.0.8‑cp38‑cp38‑win_amd64.whl
-pip3 install gmpy2-2.0.8-cp38-cp38-win_amd64.whl
+https://www.lfd.uci.edu/~gohlke/pythonlibs/  
+gmpy2‑2.0.8‑cp38‑cp38‑win_amd64.whl  
+pip3 install gmpy2-2.0.8-cp38-cp38-win_amd64.whl  
 
 https://github.com/ebellocchia/bip_utils
 sudo pip3 install bip_utils
