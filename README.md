@@ -1,8 +1,8 @@
 # mnemonic-colider
 
-Создание Мнемоник из 9 языков 'english', 'chinese_simplified', 'chinese_traditional', 'french', 'italian', 'spanish','czech','korean','japanese'
-Одновременый поиск по 7 базам адресов 'ltc.bf','dash.bf','eth.bf','doge.bf','cash.bf','sv.bf','btc.bf','cash-legacy.bf'
-Режимы работы BIP32, BIP44
+Создание Мнемоник из 9 языков 'english', 'chinese_simplified', 'chinese_traditional', 'french', 'italian', 'spanish','czech','korean','japanese'  
+Одновременый поиск по 7 базам адресов 'ltc.bf','dash.bf','eth.bf','doge.bf','cash.bf','sv.bf','btc.bf','cash-legacy.bf'  
+Режимы работы BIP32, BIP44  
 
 Зависимости:  
 Python 3.7 и выше  
