@@ -2,26 +2,23 @@
 
 Зависимости:  
 Python 3.7 и выше  
-
-https://github.com/dnanhkhoa/simple-bloom-filter  
-sudo pip3 install simplebloomfilter  
-
-https://github.com/trezor/python-mnemonic  
-sudo pip3 install mnemonic  
-  
-sudo apt-get install libgmp-dev  
+sudo apt-get install libgmp2-dev  
 sudo apt-get install libmpfr-dev  
 sudo apt-get install libmpc-dev  
+-------------------------------------
+sudo pip3 install simplebloomfilter  
+sudo pip3 install bitarray==1.9.2  
+sudo pip3 install mnemonic  
+sudo pip3 install bip-utils==1.6.0  
 sudo pip3 install --user gmpy2==2.1.0a2  
 sudo pip3 install ecdsa[gmpy2]  
 
-Windows  
+-------------------------------------  
+Windows
 https://www.lfd.uci.edu/~gohlke/pythonlibs/  
 gmpy2‑2.0.8‑cp38‑cp38‑win_amd64.whl  
 pip3 install gmpy2-2.0.8-cp38-cp38-win_amd64.whl  
-pip3 install bitarray==1.9.2  
-https://github.com/ebellocchia/bip_utils  
-sudo pip3 install bip_utils  
+----------------------------------------
 
 создайте BloobFilter (BF create\Cbloom.py)
 пример:
