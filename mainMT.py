@@ -33,7 +33,6 @@ class inf:
     type_bip:int = 32
     dir_bf:str = ''
     process_time_work = 0.0
-    total_key = 0
 
 
 def load_BF(bf_file):
@@ -45,7 +44,7 @@ def load_BF(bf_file):
     global bf_sv
     global bf_btc
     try:
-        fp = open(inf.dir_bf+'\\'+bf_file, 'rb')
+        fp = open(inf.dir_bf+'/'+bf_file, 'rb')
     except FileNotFoundError:
         print('\n'+'File: '+ fl + ' не найден.')
         sys.exit()
@@ -286,9 +285,8 @@ def run32(bf_btc):
     while ind > 0:
         start_time = time.time()
         work32(bf_btc)
-        inf.total_key += inf.count_32
         inf.process_time_work = time.time() - start_time
-        print(Fore.YELLOW+'cycle: {:d} | total key: {:d} | key/s: {:d} in process {:s}'.format(ind, inf.total_key, int(inf.count_32/inf.process_time_work), multiprocessing.current_process().name),flush=True)
+        print(Fore.YELLOW+'cycle: {:d} | total key: {:d} | key/s: {:d} in process {:s}'.format(ind, inf.count_44*(ind), int(inf.count_32/inf.process_time_work), multiprocessing.current_process().name),flush=True)
         ind +=1
 
 
@@ -297,10 +295,8 @@ def run44(bf_ltc,bf_dash,bf_eth,bf_doge,bf_cash,bf_sv,bf_btc):
     while ind > 0:
         start_time = time.time()
         work44(bf_ltc,bf_dash,bf_eth,bf_doge,bf_cash,bf_sv,bf_btc)
-        inf.total_key += inf.count_44
         inf.process_time_work = time.time() - start_time
-        print(Fore.YELLOW+'[*] cycle: {} | total key: {} | key/s: {:d} in process {:s}'.format(ind, inf.total_key, int(inf.count_44/inf.process_time_work), multiprocessing.current_process().name),flush=True)
-        #print(Fore.YELLOW+'name process: {} | cycle: {} | total key: {} | key/s: {:f}'.format(multiprocessing.current_process().name, ind, inf.count_44*(ind), inf.process_time_work),flush=True)
+        print(Fore.YELLOW+'[*] cycle: {} | total key: {} | key/s: {:d} in process {:s}'.format(ind, inf.count_44*(ind), int(inf.count_44/inf.process_time_work), multiprocessing.current_process().name),flush=True)
         ind +=1
 
 if __name__ == "__main__":
@@ -308,7 +304,7 @@ if __name__ == "__main__":
     print('* Version: {} '.format(inf   .version))
     if len (sys.argv) == 4:
         inf.type_bip:int = int(sys.argv[1])
-        inf.dir_bf:str = os.getcwd()+'\\'+sys.argv[2]
+        inf.dir_bf:str = os.getcwd()+'/'+sys.argv[2]
         inf.process_count_work:int = int(sys.argv[3])
         print('* Total kernel of CPU: {} '.format(multiprocessing.cpu_count()))
         print('* Used kernel: {}'.format(inf.process_count_work))
@@ -331,7 +327,6 @@ if __name__ == "__main__":
         procs = []
         try:
             for index in range(inf.process_count_work):
-                #proc = multiprocessing.Process(target=work32, name= 'cpu'+str(index),args = (bf_btc, ))
                 proc = multiprocessing.Process(target=run32, name= 'cpu'+str(index), args = (bf_btc, ))
                 procs.append(proc)
                 proc.start()
