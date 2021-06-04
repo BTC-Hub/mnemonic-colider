@@ -68,5 +68,6 @@ name process: cpu2 | cycle: 4487 | total key: 3769080 | key/s: 676
 name process: cpu0 | cycle: 4481 | total key: 3764040 | key/s: 674  
   
 
-  
+exe файл завернут:  
+  pyinstaller --runtime-tmpdir .\temp --onefile --clean --name pulsarMT --add-data "mnemonic;mnemonic" --add-data "rezult.txt;." mainMT.py
 
