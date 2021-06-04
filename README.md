@@ -48,7 +48,7 @@ python Cbloom.py <in file> <outfile>
 https://gz.blockchair.com/  
   
 или на моем ресурсе  
-https://drive.google.com/drive/folders/18goTXQiM6MIYmK67ej5jwjRu5nfLCyxw?usp=sharing  
+https://drive.google.com/drive/folders/1i7OxFbJ2x-xnqd1ANStF_eIKutAxdfoL?usp=sharing
   
 
 D:\WORK\nem>python mainmt.py 44 bf 3  
