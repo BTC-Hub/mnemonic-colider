@@ -1,9 +1,14 @@
 # mnemonic-colider
+Программа создана в первую очередь для изучения языка PYTHON
+все что реализовано легко просто и доступно для самого обычного пользователя!
 
-Создание Мнемоник из 9 языков 'english', 'chinese_simplified', 'chinese_traditional', 'french', 'italian', 'spanish','czech','korean','japanese'  
-Одновременый поиск по 7 базам адресов 'ltc.bf','dash.bf','eth.bf','doge.bf','cash.bf','sv.bf','btc.bf','cash-legacy.bf'  
-Режимы работы BIP32, BIP44  
-
+Что я реализованно:
+создание BIP39 Mnemonic для 9 языков. Возможно использовать все сразу или какието отдельно 'english', 'chinese_simplified', 'chinese_traditional', 'french', 'italian', 'spanish','czech','korean','japanese'  
+Создан поиск по 7 базам данных (BloobFilter).  
+по организации BIP-32 доступно только BTC так как остальные производные.  
+по организации BIP-44 Доступно 7 баз данных  'ltc.bf','dash.bf','eth.bf','doge.bf','sv.bf','btc.bf','cash-legacy.bf'  
+можно искать во всех или только в интересующих.  
+  
 Зависимости:  
 Python 3.7 и выше  
 sudo apt-get install libgmp2-dev  
