@@ -33,19 +33,20 @@ python Cbloom.py <in file> <outfile>
   in file - текстовый файл с адресами (один адрес на одну срочку)  
   out file - файл блюм фильтра  
   
-используйте программу:
-Однопоточная версия
+используйте программу:  
+Однопоточная версия  
   python main.py -b <BIP 32 или 44> -d <директория с файлами блюм фильтра>  
-  python main.py -b 32 -d BF
-Многопоточная версия
-  python mainMT.py <BIP 32 или 44> <директория с файлами блюм фильтра> <количество ядер>
-  python mainMT.py 44 BF 3
+  python main.py -b 32 -d BF  
+  
+Многопоточная версия  
+  python mainMT.py <BIP 32 или 44> <директория с файлами блюм фильтра> <количество ядер>  
+  python mainMT.py 44 BF 3  
   
 файлы с адресами брать здесь  
-https://gz.blockchair.com/
+https://gz.blockchair.com/  
   
 или на моем ресурсе  
-https://drive.google.com/drive/folders/18goTXQiM6MIYmK67ej5jwjRu5nfLCyxw?usp=sharing
+https://drive.google.com/drive/folders/18goTXQiM6MIYmK67ej5jwjRu5nfLCyxw?usp=sharing  
   
 
 D:\WORK\nem>python mainmt.py 44 bf 3  
