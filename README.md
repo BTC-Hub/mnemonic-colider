@@ -2,9 +2,9 @@
 Программа создана в первую очередь для изучения языка PYTHON
 все что реализовано легко просто и доступно для самого обычного пользователя!
 
-Что я реализованно:
-создание BIP39 Mnemonic для 9 языков. Возможно использовать все сразу или какието отдельно 'english', 'chinese_simplified', 'chinese_traditional', 'french', 'italian', 'spanish','czech','korean','japanese'  
-Создан поиск по 7 базам данных (BloobFilter).  
+Что я реализовано:
+создание BIP39 Mnemonic для 9 языков. Возможно использовать все сразу или какие-то отдельно 'english', 'chinese_simplified', 'chinese_traditional', 'french', 'italian', 'spanish','czech','korean','japanese'  
+Создан поиск по 7 базам данных (BloomFilter).  
 по организации BIP-32 доступно только BTC так как остальные производные.  
 по организации BIP-44 Доступно 7 баз данных  'ltc.bf','dash.bf','eth.bf','doge.bf','sv.bf','btc.bf','cash-legacy.bf'  
 можно искать во всех или только в интересующих.  
@@ -33,8 +33,13 @@ python Cbloom.py <in file> <outfile>
   in file - текстовый файл с адресами (один адрес на одну срочку)  
   out file - файл блюм фильтра  
   
-используйте программу  
+используйте программу:
+Однопоточная версия
   python main.py -b <BIP 32 или 44> -d <директория с файлами блюм фильтра>  
+  python main.py -b 32 -d BF
+Многопоточная версия
+  python mainMT.py <BIP 32 или 44> <директория с файлами блюм фильтра> <количество ядер>
+  python mainMT.py 44 BF 3
   
 файлы с адресами брать здесь  
 https://gz.blockchair.com/
