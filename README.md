@@ -11,9 +11,9 @@
   
 Зависимости:  
 Python 3.7 и выше  
-sudo apt-get install libgmp2-dev  
-sudo apt-get install libmpfr-dev 
-sudo apt-get install libmpc-dev 
+sudo apt-get install libgmp-dev   
+sudo apt-get install libmpfr-dev  
+sudo apt-get install libmpc-dev  
 sudo pip3 install simplebloomfilter  
 sudo pip3 install bitarray==1.9.2  
 sudo pip3 install mnemonic  
@@ -39,11 +39,19 @@ python Cbloom.py <in file> <outfile>
   python main.py -b 32 -d BF  
   
 Многопоточная версия  
-  python mainMT.py <BIP 32 или 44> <директория с файлами блюм фильтра> <количество ядер>  
-  python mainMT.py 44 BF 3  
+  python mainMT.py <BIP 32 или 44> <директория с файлами блюм фильтра> <количество ядер>  <описание сервера>  
+  python mainMT.py 32 BF 2 Local_win  
+  python mainMT.py 44 BF 3 Local_linux  
 
 # Не забудьте настроить параметры своей почты для отправки найденных мнемоник  
-
+    host:str = 'smtp.mail.ru'  
+    port:int = 25  
+    password:str = 'adfgvfdvbfdsgbdf'  
+    to_addr:str = 'info@mail.ru'  
+    from_addr:str = 'info@mail.ru'  
+  
+  
+  
 файлы с адресами брать здесь  
 https://gz.blockchair.com/  
   
