@@ -1,6 +1,8 @@
 # #!/usr/bin/python3
 # encoding=utf8
 # -*- coding: utf-8 -*-
+
+
 import multiprocessing
 from multiprocessing import freeze_support
 import smtplib
@@ -16,14 +18,15 @@ init()
 class email:
     host:str = 'smtp.timeweb.ru'
     port:int = 25
-    password:str = 'Vfhbyfl66$'
+    password:str = 'adfgvfdvbfdsgbdf'
     subject:str = '--- Find Mnemonic ---'
     to_addr:str = 'info@quadrotech.ru'
     from_addr:str = 'info@quadrotech.ru'
+    des_mail = ''
 
 
 class inf:
-    version:str = ' Pulsar v3.0 multiT '
+    version:str = ' Pulsar v3.1 multiT '
     mnemonic_lang = ['english', 'chinese_simplified', 'chinese_traditional', 'french', 'italian', 'spanish']
     #fl_44:list = ['ltc.bf','dash.bf','eth.bf','doge.bf','cash.bf','sv.bf','btc.bf']
     #fl_32:list = ['btc.bf']
@@ -68,6 +71,7 @@ def load_BF(bf_file):
 
 
 def send_email(text):
+    email.subject = email.subject + email.des_mail
     BODY:str = '\r\n'.join(('From: %s' % email.from_addr, 'To: %s' % email.to_addr, 'Subject: %s' % email.subject, '', text)).encode('utf-8')
     server = smtplib.SMTP(email.host,email.port)
     server.login(email.from_addr, email.password)
@@ -302,10 +306,11 @@ def run44(bf_ltc,bf_dash,bf_eth,bf_doge,bf_cash,bf_sv,bf_btc):
 if __name__ == "__main__":
     freeze_support()
     print('* Version: {} '.format(inf   .version))
-    if len (sys.argv) == 4:
+    if len (sys.argv) == 5:
         inf.type_bip:int = int(sys.argv[1])
         inf.dir_bf:str = os.getcwd()+'/'+sys.argv[2]
         inf.process_count_work:int = int(sys.argv[3])
+        email.des_mail = sys.argv[4]
         print('* Total kernel of CPU: {} '.format(multiprocessing.cpu_count()))
         print('* Used kernel: {}'.format(inf.process_count_work))
         print('* Mode Search: BIP-{}'.format (inf.type_bip))
@@ -331,7 +336,13 @@ if __name__ == "__main__":
                 procs.append(proc)
                 proc.start()
             for proc in procs:
-                proc.join()
+                try:
+                    proc.join()
+                except KeyboardInterrupt:
+                    print('\n'+'Прервано пользователем.')
+                    proc.terminate()
+                    sys.exc_info()
+                    break
         except KeyboardInterrupt:
             print('\n'+'Прервано пользователем.')
             for proc in procs:
@@ -355,10 +366,13 @@ if __name__ == "__main__":
                 procs.append(proc)
                 proc.start()
             for proc in procs:
-                proc.join()
+                try:
+                    proc.join()
+                except KeyboardInterrupt:
+                    print('\n'+'Прервано пользователем.')
+                    sys.exc_info()
+                    break
         except KeyboardInterrupt:
             print('\n'+'Прервано пользователем.')
-            for proc in procs:
-                proc.terminate()
             sys.exit()
     print('\n'+'Программа завершила работу')
