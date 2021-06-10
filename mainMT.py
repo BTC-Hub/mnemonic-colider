@@ -6,7 +6,7 @@
 import multiprocessing
 from multiprocessing import freeze_support
 import smtplib
-from bip_utils import Bip32, Bip32Utils, Bip44, Bip44Coins, Bip44Changes
+from bip_utils import Bip32, Bip32Utils, Bip44, Bip44Coins, Bip44Changes, Bip39EntropyGenerator, Bip39MnemonicGenerator
 from bloomfilter import BloomFilter
 from mnemonic import Mnemonic
 import sys, os
@@ -18,7 +18,7 @@ init()
 class email:
     host:str = 'smtp.timeweb.ru'
     port:int = 25
-    password:str = 'adfgvfdvbfdsgbdf'
+    password:str = 'fdsfdsfdgdfgd'
     subject:str = '--- Find Mnemonic ---'
     to_addr:str = 'info@quadrotech.ru'
     from_addr:str = 'info@quadrotech.ru'
@@ -26,7 +26,7 @@ class email:
 
 
 class inf:
-    version:str = ' Pulsar v3.1 multiT '
+    version:str = ' Pulsar v3.2 multiT '
     mnemonic_lang = ['english', 'chinese_simplified', 'chinese_traditional', 'french', 'italian', 'spanish']
     #fl_44:list = ['ltc.bf','dash.bf','eth.bf','doge.bf','cash.bf','sv.bf','btc.bf']
     #fl_32:list = ['btc.bf']
@@ -36,6 +36,8 @@ class inf:
     type_bip:int = 32
     dir_bf:str = ''
     process_time_work = 0.0
+    mode = 's'
+    mode_text = ''
 
 
 def load_BF(bf_file):
@@ -100,10 +102,16 @@ def save_rezult(text:str):
 
 def work32(bf_btc):
     for mem in inf.mnemonic_lang:
-        mnemo = Mnemonic(mem)
-        mnemonic:str = mnemo.generate(strength=128)
-        seed_bytes:bytes = mnemo.to_seed(mnemonic, passphrase='')
-        bip32_ctx = Bip32.FromSeed(seed_bytes)
+        if inf.mode == 'r':
+            seed_bytes:bytes = secrets.token_bytes(64)
+        elif inf.mode == 's':
+            mnemo = Mnemonic(mem)
+            mnemonic:str = mnemo.generate(strength=128)
+            seed_bytes:bytes = mnemo.to_seed(mnemonic, passphrase='')
+            bip32_ctx = Bip32.FromSeed(seed_bytes)
+        else:
+            entropy_bytes = Bip39EntropyGenerator(Bip39EntropyBitLen.BIT_LEN_128).Generate()
+            mnemonic = Bip39MnemonicGenerator().FromEntropy(entropy_bytes)
         #----------------------------------------------------------------
         for num in range(20):
             bip32_ctx_ex = bip32_ctx.DerivePath("0'/0'/" + str(num))  # Bitcoin Core address primary m/0'/0'/0
@@ -175,9 +183,15 @@ def work32(bf_btc):
 
 def work44(bf_ltc,bf_dash,bf_eth,bf_doge,bf_cash,bf_sv,bf_btc):
     for mem in inf.mnemonic_lang:
-        mnemo = Mnemonic(mem)
-        mnemonic:str = mnemo.generate(strength=128)
-        seed_bytes:bytes = mnemo.to_seed(mnemonic, passphrase="")
+        if inf.mode == 'r':
+            seed_bytes:bytes = secrets.token_bytes(64)
+        elif inf.mode == 's':
+            mnemo = Mnemonic(mem)
+            mnemonic:str = mnemo.generate(strength=128)
+            seed_bytes:bytes = mnemo.to_seed(mnemonic, passphrase="")
+        else:
+            entropy_bytes = Bip39EntropyGenerator(Bip39EntropyBitLen.BIT_LEN_128).Generate()
+            mnemonic = Bip39MnemonicGenerator.FromEntropy(entropy_bytes)
 
         # btc
         bip_obj_mst = Bip44.FromSeed(seed_bytes, Bip44Coins.BITCOIN)
@@ -306,14 +320,28 @@ def run44(bf_ltc,bf_dash,bf_eth,bf_doge,bf_cash,bf_sv,bf_btc):
 if __name__ == "__main__":
     freeze_support()
     print('* Version: {} '.format(inf   .version))
-    if len (sys.argv) == 5:
+    if len (sys.argv) == 6:
         inf.type_bip:int = int(sys.argv[1])
         inf.dir_bf:str = os.getcwd()+'/'+sys.argv[2]
         inf.process_count_work:int = int(sys.argv[3])
-        email.des_mail = sys.argv[4]
+        inf.mode = sys.argv[4]
+        print(inf.mode)
+        #if (inf.mode != 's') or (inf.mode != 'r') or (inf.mode != 'e'):
+        if inf.mode in ('s', 'r', 'e'):
+            if (inf.mode == 's'):
+                inf.mode_text = 'Стандартный'
+            elif (inf.mode == 'r'):
+                inf.mode_text = 'Случайный'
+            else:
+                inf.mode_text = 'Энтропия'
+        else:
+            print('выбран не верный режим')
+            sys.exit()
+        email.des_mail = sys.argv[5]
+
         print('* Total kernel of CPU: {} '.format(multiprocessing.cpu_count()))
         print('* Used kernel: {}'.format(inf.process_count_work))
-        print('* Mode Search: BIP-{}'.format (inf.type_bip))
+        print('* Mode Search: BIP-{} {}'.format (inf.type_bip,inf.mode_text))
         print('* Dir database Bloom Filter: {}'.format (inf.dir_bf))
     else:
         print ("Не хватает параметров.")
@@ -361,7 +389,6 @@ if __name__ == "__main__":
         procs = []
         try:
             for index in range(inf.process_count_work):
-                #proc = multiprocessing.Process(target=work32, name= 'cpu'+str(index),args = (bf_btc, ))
                 proc = multiprocessing.Process(target=run44, name= 'cpu'+str(index), args = (bf_ltc,bf_dash,bf_eth,bf_doge,bf_cash,bf_sv,bf_btc,))
                 procs.append(proc)
                 proc.start()
