@@ -56,7 +56,8 @@ python Cbloom.py <in file> <outfile>
 https://gz.blockchair.com/  
   
 или на моем ресурсе  
-https://drive.google.com/drive/folders/1i7OxFbJ2x-xnqd1ANStF_eIKutAxdfoL?usp=sharing
+https://drive.google.com/drive/folders/1i7OxFbJ2x-xnqd1ANStF_eIKutAxdfoL?usp=sharing  
+  [*] Update file BTC (35M address)
   
 
 D:\WORK\nem>python mainmt.py 44 bf 3  
