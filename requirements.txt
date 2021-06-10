@@ -1,0 +1,6 @@
+pip3 install simplebloomfilter  
+pip3 install bitarray==1.9.2  
+pip3 install mnemonic  
+pip3 install bip-utils==1.6.0  
+pip3 install --user gmpy2==2.1.0a2  
+pip3 install ecdsa[gmpy2] 
