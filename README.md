@@ -60,8 +60,8 @@ https://drive.google.com/drive/folders/1i7OxFbJ2x-xnqd1ANStF_eIKutAxdfoL?usp=sha
   [*] Update file BTC (35M address)
   
 
-D:\WORK\nem>python mainmt.py 44 bf 3  
-* Version:  Pulsar v3.0 multiT  
+D:\WORK\nem>python mainmt.py 44 bf 3 Local  
+* Version:  Pulsar v3.1 multiT  
 * Total kernel of CPU: 4  
 * Used kernel: 3  
 * Mode Search: BIP-44  
