@@ -19,8 +19,10 @@ sudo pip3 install bip-utils==1.6.0
 sudo pip3 install --user gmpy2==2.1.0a2  
 sudo pip3 install ecdsa[gmpy2]  
   
-или
+или  
 pip install -r requirements.txt  
+или  
+python -m pip install -r requirements.txt
   
 Windows
 https://www.lfd.uci.edu/~gohlke/pythonlibs/  
