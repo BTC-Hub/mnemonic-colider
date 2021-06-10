@@ -8,20 +8,20 @@
 по организации BIP-32 доступно только BTC так как остальные производные.  
 по организации BIP-44 Доступно 7 баз данных  'ltc.bf','dash.bf','eth.bf','doge.bf','sv.bf','btc.bf','cash-legacy.bf'  
 можно искать во всех или только в интересующих.  
-  
-Зависимости:  
-Python 3.7 и выше  
-sudo apt-get install libgmp-dev   
-sudo apt-get install libmpfr-dev  
-sudo apt-get install libmpc-dev  
+
+Установка:  
+Зависимости: Python 3.7 и выше  
+sudo apt-get install libgmp-dev apt-get install libmpfr-dev apt-get install libmpc-dev  
 sudo pip3 install simplebloomfilter  
 sudo pip3 install bitarray==1.9.2  
 sudo pip3 install mnemonic  
 sudo pip3 install bip-utils==1.6.0  
 sudo pip3 install --user gmpy2==2.1.0a2  
 sudo pip3 install ecdsa[gmpy2]  
-
-
+  
+или
+pip install -r requirements.txt  
+  
 Windows
 https://www.lfd.uci.edu/~gohlke/pythonlibs/  
 gmpy2‑2.0.8‑cp38‑cp38‑win_amd64.whl  
