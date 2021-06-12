@@ -5,8 +5,9 @@
 
 import multiprocessing
 from multiprocessing import freeze_support
+import secrets
 import smtplib
-from bip_utils import Bip32, Bip32Utils, Bip44, Bip44Coins, Bip44Changes, Bip39EntropyGenerator, Bip39MnemonicGenerator
+from bip_utils import Bip32, Bip32Utils, Bip44, Bip44Coins, Bip44Changes, Bip39EntropyGenerator,Bip39MnemonicGenerator, Bip39WordsNum,Bip39EntropyBitLen,Bip39SeedGenerator
 from bloomfilter import BloomFilter
 from mnemonic import Mnemonic
 import sys, os
@@ -18,7 +19,7 @@ init()
 class email:
     host:str = 'smtp.timeweb.ru'
     port:int = 25
-    password:str = 'fdsfdsfdgdfgd'
+    password:str = 'asdfsdfsdfsafsd'
     subject:str = '--- Find Mnemonic ---'
     to_addr:str = 'info@quadrotech.ru'
     from_addr:str = 'info@quadrotech.ru'
@@ -26,7 +27,7 @@ class email:
 
 
 class inf:
-    version:str = ' Pulsar v3.2 multiT '
+    version:str = ' Pulsar v3.2.1 multiT '
     mnemonic_lang = ['english', 'chinese_simplified', 'chinese_traditional', 'french', 'italian', 'spanish']
     #fl_44:list = ['ltc.bf','dash.bf','eth.bf','doge.bf','cash.bf','sv.bf','btc.bf']
     #fl_32:list = ['btc.bf']
@@ -104,14 +105,18 @@ def work32(bf_btc):
     for mem in inf.mnemonic_lang:
         if inf.mode == 'r':
             seed_bytes:bytes = secrets.token_bytes(64)
+            bip32_ctx = Bip32.FromSeed(seed_bytes)
         elif inf.mode == 's':
             mnemo = Mnemonic(mem)
             mnemonic:str = mnemo.generate(strength=128)
-            seed_bytes:bytes = mnemo.to_seed(mnemonic, passphrase='')
+            seed_bytes:bytes = mnemo.to_seed(mnemonic, passphrase="")
             bip32_ctx = Bip32.FromSeed(seed_bytes)
         else:
             entropy_bytes = Bip39EntropyGenerator(Bip39EntropyBitLen.BIT_LEN_128).Generate()
-            mnemonic = Bip39MnemonicGenerator().FromEntropy(entropy_bytes)
+            mnemonic = Bip39MnemonicGenerator.FromEntropy(entropy_bytes)
+            passphrase = "my_passphrase"
+            seed_bytes = Bip39SeedGenerator(mnemonic).Generate(passphrase)
+            bip32_ctx = Bip32.FromSeed(seed_bytes)
         #----------------------------------------------------------------
         for num in range(20):
             bip32_ctx_ex = bip32_ctx.DerivePath("0'/0'/" + str(num))  # Bitcoin Core address primary m/0'/0'/0
@@ -192,7 +197,8 @@ def work44(bf_ltc,bf_dash,bf_eth,bf_doge,bf_cash,bf_sv,bf_btc):
         else:
             entropy_bytes = Bip39EntropyGenerator(Bip39EntropyBitLen.BIT_LEN_128).Generate()
             mnemonic = Bip39MnemonicGenerator.FromEntropy(entropy_bytes)
-
+            passphrase = "my_passphrase"
+            seed_bytes = Bip39SeedGenerator(mnemonic).Generate(passphrase)
         # btc
         bip_obj_mst = Bip44.FromSeed(seed_bytes, Bip44Coins.BITCOIN)
         bip_obj_acc = bip_obj_mst.Purpose().Coin().Account(0)
