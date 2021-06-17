@@ -2,19 +2,22 @@ from multiprocessing import Process, current_process
 import multiprocessing
 import secrets
 import smtplib
-from bip_utils import Bip32, Bip32Utils, Bip44, Bip44Coins, Bip44Changes, Bip39ChecksumError, Bip39MnemonicValidator, Bip39EntropyGenerator,Bip39MnemonicGenerator, Bip39WordsNum,Bip39EntropyBitLen,Bip39SeedGenerator,Bip39Languages
+from bip_utils import Bip32, Bip32Utils, Bip44, Bip44Coins, Bip44Changes
+#from bip_utils import Bip32, Bip32Utils, Bip44, Bip44Coins, Bip44Changes, Bip39ChecksumError, Bip39MnemonicValidator, Bip39EntropyGenerator,Bip39MnemonicGenerator, Bip39WordsNum,Bip39EntropyBitLen,Bip39SeedGenerator,Bip39Languages
 from bloomfilter import BloomFilter
+from mnemonic import Mnemonic
 import sys
 import time
 from colorama import init, Fore, Back, Style
 import argparse
+#from backports.pbkdf2 import pbkdf2_hmac
 init()
 
 
 class email:
     host:str = 'smtp.timeweb.ru'
     port:int = 25
-    password:str = '111111111111111111111'
+    password:str = '1111111111111111'
     subject:str = '--- Find Mnemonic ---'
     to_addr:str = 'info@quadrotech.ru'
     from_addr:str = 'info@quadrotech.ru'
@@ -22,15 +25,16 @@ class email:
 
 
 class inf:
-    version:str = ' Pulsar v3.3.0 multiT '
+    version:str = ' Pulsar v3.3.3 multiT '
     #mnemonic_lang = ['english', 'chinese_simplified', 'chinese_traditional', 'french', 'italian', 'spanish', 'korean','japanese']
+    mnemonic_lang = ['english', 'chinese_simplified', 'french', 'spanish','japanese']
     #fl_44:list = ['ltc.bf','dash.bf','eth.bf','doge.bf','cash.bf','sv.bf','btc.bf']
     #fl_32:list = ['btc.bf']
-    count_32:int = 1620
-    count_44:int = 1260
+    count_32:int = 0#1600
+    count_44:int = 0#1120
     process_count_work:int = 1 #количество процессов
     type_bip:int = 32
-    dir_bf:str = ''
+    dir_bf:str = 'BF'
     process_time_work = 0.0
     mode = 's'
     mode_text = ''
@@ -78,7 +82,6 @@ def load_BF(bf_file):
         print('Bloom Filter '+bf_file+' Loaded')
 
 
-
 def send_email(text):
     email.subject = email.subject + ' des ->' + email.des_mail
     BODY:str = '\r\n'.join(('From: %s' % email.from_addr, 'To: %s' % email.to_addr, 'Subject: %s' % email.subject, '', text)).encode('utf-8')
@@ -108,33 +111,21 @@ def save_rezult(text:str):
 
 
 def work32(bf_btc):
-    for mem in Bip39Languages:
+    inf.count_32 = 0
+    for mem in inf.mnemonic_lang:
         if inf.mode == 'r':
             seed_bytes:bytes = secrets.token_bytes(64)
             bip32_ctx = Bip32.FromSeed(seed_bytes)
-        elif inf.mode == 's':
-            mnemonic = Bip39MnemonicGenerator(mem).FromWordsNumber(Bip39WordsNum.WORDS_NUM_12)
-            try:
-                Bip39MnemonicValidator(mnemonic).Validate()
-                seed_bytes = Bip39SeedGenerator(mnemonic, mem).Generate()
-                bip32_ctx = Bip32.FromSeed(seed_bytes)
-            except Bip39ChecksumError:
-                print('Invalid checksum...')
-            except ValueError:
-                print('Invalid length or language...')
         else:
-            entropy_bytes = Bip39EntropyGenerator(Bip39EntropyBitLen.BIT_LEN_128).Generate()
-            mnemonic = Bip39MnemonicGenerator().FromEntropy(entropy_bytes)
-            try:
-                Bip39MnemonicValidator(mnemonic).Validate()
-                seed_bytes = Bip39SeedGenerator(mnemonic).Generate()
-                bip32_ctx = Bip32.FromSeed(seed_bytes)
-            except Bip39ChecksumError:
-                print('Invalid checksum...')
-            except ValueError:
-                print('Invalid length or language...')
+            mnemo = Mnemonic(mem)
+            mnemonic:str = mnemo.generate(strength=128)
+            salt = b'mnemonic'
+            #seed_bytes:bytes = pbkdf2_hmac('sha512', mnemonic.encode(), salt, iterations=2048)
+            seed_bytes:bytes = mnemo.to_seed(mnemonic, passphrase='')
+            bip32_ctx = Bip32.FromSeed(seed_bytes)
 #-----------------------------------------------------------------------------------------------------------------
         for num in range(20):
+            inf.count_32 = inf.count_32 +1
             bip32_ctx_ex = bip32_ctx.DerivePath("0'/" + str(num))  # m/0'/0
             bip32_addr:str = bip32_ctx_ex.PublicKey().ToAddress()
             if bip32_addr in bf_btc:
@@ -146,6 +137,7 @@ def work32(bf_btc):
                 save_rezult(res)
                 send_email(res)
         for num in range(20):
+            inf.count_32 = inf.count_32 +1
             bip32_ctx_ex = bip32_ctx.DerivePath("0'/0/" + str(num))  # m/0'/0/0
             bip32_addr:str = bip32_ctx_ex.PublicKey().ToAddress()
             if bip32_addr in bf_btc:
@@ -157,6 +149,7 @@ def work32(bf_btc):
                 save_rezult(res)
                 send_email(res)
         for num in range(20):
+            inf.count_32 = inf.count_32 +1
             bip32_ctx_ex = bip32_ctx.DerivePath("0'/0/" + str(num)+"'")  # m/0'/0/0'
             bip32_addr:str = bip32_ctx_ex.PublicKey().ToAddress()
             if bip32_addr in bf_btc:
@@ -168,6 +161,7 @@ def work32(bf_btc):
                 save_rezult(res)
                 send_email(res)
         for num in range(20):
+            inf.count_32 = inf.count_32 +1
             bip32_ctx_ex = bip32_ctx.DerivePath("0'/" + str(num)+"'")  # m/0'/0'
             bip32_addr:str = bip32_ctx_ex.PublicKey().ToAddress()
             if bip32_addr in bf_btc:
@@ -179,6 +173,7 @@ def work32(bf_btc):
                 save_rezult(res)
                 send_email(res)
         for num in range(20):
+            inf.count_32 = inf.count_32 +1
             bip32_ctx_ex = bip32_ctx.DerivePath("0'/0'/" + str(num))  # m/0'/0'/0
             bip32_addr:str = bip32_ctx_ex.PublicKey().ToAddress()
             if bip32_addr in bf_btc:
@@ -190,6 +185,7 @@ def work32(bf_btc):
                 save_rezult(res)
                 send_email(res)
         for num in range(20):
+            inf.count_32 = inf.count_32 +1
             bip32_ctx_ex = bip32_ctx.DerivePath("0'/0'/" + str(num)+"'")  # m/0'/0'/0'
             bip32_addr:str = bip32_ctx_ex.PublicKey().ToAddress()
             if bip32_addr in bf_btc:
@@ -201,6 +197,7 @@ def work32(bf_btc):
                 save_rezult(res)
                 send_email(res)
         for num in range(20):
+            inf.count_32 = inf.count_32 +1
             bip32_ctx_ex = bip32_ctx.DerivePath("44'/0'/" + str(num))  # m/44'/0'/0
             bip32_addr:str = bip32_ctx_ex.PublicKey().ToAddress()
             if bip32_addr in bf_btc:
@@ -212,6 +209,7 @@ def work32(bf_btc):
                 save_rezult(res)
                 send_email(res)
         for num in range(20):
+            inf.count_32 = inf.count_32 +1
             bip32_ctx_ex = bip32_ctx.DerivePath("44'/0'/" + str(num)+"'")  # m/44'/0'/0'
             bip32_addr:str = bip32_ctx_ex.PublicKey().ToAddress()
             if bip32_addr in bf_btc:
@@ -223,6 +221,7 @@ def work32(bf_btc):
                 save_rezult(res)
                 send_email(res)
         for num in range(20):
+            inf.count_32 = inf.count_32 +1
             bip32_ctx_ex = bip32_ctx.DerivePath("44'/0'/0'/" + str(num))  # m/44'/0'/0'/0
             bip32_addr:str = bip32_ctx_ex.PublicKey().ToAddress()
             if bip32_addr in bf_btc:
@@ -234,7 +233,32 @@ def work32(bf_btc):
                 save_rezult(res)
                 send_email(res)
         for num in range(20):
+            inf.count_32 = inf.count_32 +1
             bip32_ctx_ex = bip32_ctx.DerivePath("44'/0'/0'/" + str(num)+"'")  # m/44'/0'/0'/0'
+            bip32_addr:str = bip32_ctx_ex.PublicKey().ToAddress()
+            if bip32_addr in bf_btc:
+                print('============== Find =================')
+                bip32_PK = bip32_ctx.PrivateKey().ToWif()
+                res:str = bip32_addr + ' | TRUE | ' + mnemonic + ' | ' + bip32_PK +' | BTC'
+                print(res)
+                inf.key_found = inf.key_found + 1
+                save_rezult(res)
+                send_email(res)
+        for num in range(20):
+            inf.count_32 = inf.count_32 +1
+            bip32_ctx_ex = bip32_ctx.DerivePath("0/" + str(num))  # m/0/0
+            bip32_addr:str = bip32_ctx_ex.PublicKey().ToAddress()
+            if bip32_addr in bf_btc:
+                print('============== Find =================')
+                bip32_PK = bip32_ctx.PrivateKey().ToWif()
+                res:str = bip32_addr + ' | TRUE | ' + mnemonic + ' | ' + bip32_PK +' | BTC'
+                print(res)
+                inf.key_found = inf.key_found + 1
+                save_rezult(res)
+                send_email(res)
+        for num in range(20):
+            inf.count_32 = inf.count_32 +1
+            bip32_ctx_ex = bip32_ctx.DerivePath("0/" + str(num)+"'")  # m/0/0'
             bip32_addr:str = bip32_ctx_ex.PublicKey().ToAddress()
             if bip32_addr in bf_btc:
                 print('============== Find =================')
@@ -247,33 +271,21 @@ def work32(bf_btc):
 
 
 def work44(bf_ltc,bf_dash,bf_eth,bf_doge,bf_cash,bf_sv,bf_btc):
-    for mem in Bip39Languages:
+    inf.count_44 = 0
+    for mem in inf.mnemonic_lang:
         if inf.mode == 'r':
             seed_bytes:bytes = secrets.token_bytes(64)
-        elif inf.mode == 's':
-            mnemonic = Bip39MnemonicGenerator(mem).FromWordsNumber(Bip39WordsNum.WORDS_NUM_12)
-            try:
-                Bip39MnemonicValidator(mnemonic).Validate()
-                seed_bytes = Bip39SeedGenerator(mnemonic, mem).Generate()
-            except Bip39ChecksumError:
-                print('Invalid checksum...')
-            except ValueError:
-                print('Invalid length or language...')
         else:
-            entropy_bytes = Bip39EntropyGenerator(Bip39EntropyBitLen.BIT_LEN_128).Generate()
-            mnemonic = Bip39MnemonicGenerator().FromEntropy(entropy_bytes)
-            try:
-                Bip39MnemonicValidator(mnemonic).Validate()
-                seed_bytes = Bip39SeedGenerator(mnemonic).Generate()
-            except Bip39ChecksumError:
-                print('Invalid checksum...')
-            except ValueError:
-                print('Invalid length or language...')
+            mnemo = Mnemonic(mem)
+            mnemonic:str = mnemo.generate(strength=128)
+            seed_bytes:bytes = mnemo.to_seed(mnemonic, passphrase='')
+            bip32_ctx = Bip32.FromSeed(seed_bytes)
         # btc
         bip_obj_mst = Bip44.FromSeed(seed_bytes, Bip44Coins.BITCOIN)
         bip_obj_acc = bip_obj_mst.Purpose().Coin().Account(0)
         bip_obj_chain = bip_obj_acc.Change(Bip44Changes.CHAIN_EXT)
         for nom in range(20):
+            inf.count_44 = inf.count_44 +1
             bip_obj_addr = bip_obj_chain.AddressIndex(nom)
             bip_addr:str = bip_obj_addr.PublicKey().ToAddress()
             if bip_addr in bf_btc:
@@ -284,12 +296,12 @@ def work44(bf_ltc,bf_dash,bf_eth,bf_doge,bf_cash,bf_sv,bf_btc):
                 inf.key_found = inf.key_found + 1
                 save_rezult(res)
                 send_email(res)
-
         # btc_cash
         bip_obj_mst = Bip44.FromSeed(seed_bytes, Bip44Coins.BITCOIN_CASH)
         bip_obj_acc = bip_obj_mst.Purpose().Coin().Account(0)
         bip_obj_chain = bip_obj_acc.Change(Bip44Changes.CHAIN_EXT)
         for nom in range(20):
+            inf.count_44 = inf.count_44 +1
             bip_obj_addr = bip_obj_chain.AddressIndex(nom)
             bip_addr:str = bip_obj_addr.PublicKey().ToAddress()[12:]
             if bip_addr in bf_cash:
@@ -305,6 +317,7 @@ def work44(bf_ltc,bf_dash,bf_eth,bf_doge,bf_cash,bf_sv,bf_btc):
         bip_obj_acc = bip_obj_mst.Purpose().Coin().Account(0)
         bip_obj_chain = bip_obj_acc.Change(Bip44Changes.CHAIN_EXT)
         for nom in range(20):
+            inf.count_44 = inf.count_44 +1
             bip_obj_addr = bip_obj_chain.AddressIndex(nom)
             bip_addr:str = bip_obj_addr.PublicKey().ToAddress()
             if bip_addr in bf_ltc:
@@ -315,12 +328,12 @@ def work44(bf_ltc,bf_dash,bf_eth,bf_doge,bf_cash,bf_sv,bf_btc):
                 inf.key_found = inf.key_found + 1
                 save_rezult(res)
                 send_email(res)
-
         # dash
         bip_obj_mst = Bip44.FromSeed(seed_bytes, Bip44Coins.DASH)
         bip_obj_acc = bip_obj_mst.Purpose().Coin().Account(0)
         bip_obj_chain = bip_obj_acc.Change(Bip44Changes.CHAIN_EXT)
         for nom in range(20):
+            inf.count_44 = inf.count_44 +1
             bip_obj_addr = bip_obj_chain.AddressIndex(nom)
             bip_addr:str = bip_obj_addr.PublicKey().ToAddress()
             if bip_addr in bf_dash:
@@ -331,12 +344,12 @@ def work44(bf_ltc,bf_dash,bf_eth,bf_doge,bf_cash,bf_sv,bf_btc):
                 inf.key_found = inf.key_found + 1
                 save_rezult(res)
                 send_email(res)
-
         # ETH
         bip_obj_mst = Bip44.FromSeed(seed_bytes, Bip44Coins.ETHEREUM)
         bip_obj_acc = bip_obj_mst.Purpose().Coin().Account(0)
         bip_obj_chain = bip_obj_acc.Change(Bip44Changes.CHAIN_EXT)
         for nom in range(20):
+            inf.count_44 = inf.count_44 +1
             bip_obj_addr = bip_obj_chain.AddressIndex(nom)
             bip_addr:str = bip_obj_addr.PublicKey().ToAddress()
             if bip_addr in bf_eth:
@@ -347,12 +360,12 @@ def work44(bf_ltc,bf_dash,bf_eth,bf_doge,bf_cash,bf_sv,bf_btc):
                 inf.key_found = inf.key_found + 1
                 save_rezult(res)
                 send_email(res)
-
         # DOGE
         bip_obj_mst = Bip44.FromSeed(seed_bytes, Bip44Coins.DOGECOIN)
         bip_obj_acc = bip_obj_mst.Purpose().Coin().Account(0)
         bip_obj_chain = bip_obj_acc.Change(Bip44Changes.CHAIN_EXT)
         for nom in range(20):
+            inf.count_44 = inf.count_44 +1
             bip_obj_addr = bip_obj_chain.AddressIndex(nom)
             bip_addr:str = bip_obj_addr.PublicKey().ToAddress()
             if bip_addr in bf_doge:
@@ -363,12 +376,12 @@ def work44(bf_ltc,bf_dash,bf_eth,bf_doge,bf_cash,bf_sv,bf_btc):
                 inf.key_found = inf.key_found + 1
                 save_rezult(res)
                 send_email(res)
-
         # sv
         bip_obj_mst = Bip44.FromSeed(seed_bytes, Bip44Coins.BITCOIN_SV)
         bip_obj_acc = bip_obj_mst.Purpose().Coin().Account(0)
         bip_obj_chain = bip_obj_acc.Change(Bip44Changes.CHAIN_EXT)
         for nom in range(20):
+            inf.count_44 = inf.count_44 +1
             bip_obj_addr = bip_obj_chain.AddressIndex(nom)
             bip_addr:str = bip_obj_addr.PublicKey().ToAddress()
             if bip_addr in bf_sv:
@@ -388,7 +401,9 @@ def run32(bf_btc):
             start_time = time.time()
             work32(bf_btc)
             inf.process_time_work = time.time() - start_time
-            print(Fore.YELLOW+'[*] cycle: {:d} | total key: {:d} | key/s: {:d} in process {:s} | Found {:d}'.format(ind, inf.count_44*(ind), int(inf.count_32/inf.process_time_work), multiprocessing.current_process().name, inf.key_found),flush=True)
+            #print(inf.process_time_work)
+            #print(inf.count_32)
+            print(Fore.YELLOW+'[*] cycle: {:d} | total key: {:d} | key/s: {} in process {:s} | Found {:d}'.format(ind, inf.count_32*(ind), int(inf.count_32/inf.process_time_work), multiprocessing.current_process().name, inf.key_found),flush=True)
             ind +=1
     except KeyboardInterrupt:
         print('\n'+'Прервано пользователем.')
@@ -412,21 +427,19 @@ def run44(bf_ltc,bf_dash,bf_eth,bf_doge,bf_cash,bf_sv,bf_btc):
 if __name__ == "__main__":
     inf.type_bip, inf.dir_bf, inf.process_count_work, inf.mode, email.des_mail  = createParser()
     print('* Version: {} '.format(inf   .version))
-    if inf.mode in ('s', 'r', 'e'):
+    if inf.mode in ('s', 'r'):
         if (inf.mode == 's'):
             inf.mode_text = 'Стандартный'
         elif (inf.mode == 'r'):
             inf.mode_text = 'Случайный'
-        else:
-            inf.mode_text = 'Энтропия'
     else:
         print('выбран не верный режим')
         sys.exit()
-
     print('* Total kernel of CPU: {} '.format(multiprocessing.cpu_count()))
     print('* Used kernel: {}'.format(inf.process_count_work))
     print('* Mode Search: BIP-{} {}'.format (inf.type_bip,inf.mode_text))
     print('* Dir database Bloom Filter: {}'.format (inf.dir_bf))
+    print('* Языки в работе: {}'.format(inf.mnemonic_lang))
     if inf.process_count_work < 1:
         print('количество процессов должно быть больше 0')
         sys.exit()
@@ -434,7 +447,6 @@ if __name__ == "__main__":
         print('Указаное количество процессов превышает допустимое')
         print('ИСПРАВЛЕНО на допустимое количество процессов')
         inf.process_count_work = multiprocessing.cpu_count()
-
     if inf.type_bip == 32:
         print('---------------Load BF---------------')
         load_BF('btc.bf')
