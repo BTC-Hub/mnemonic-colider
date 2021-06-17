@@ -9,14 +9,21 @@ english, chinese_simplified, chinese_traditional, french, italian, spanish, czec
 по организации BIP-32 доступно только BTC так как остальные производные.  
 по организации BIP-44 Доступно 7 баз данных  'ltc.bf','dash.bf','eth.bf','doge.bf','sv.bf','btc.bf','cash-legacy.bf'  
 можно искать во всех или только в интересующих.  
-по режимам Случайный, Стандартный, Энтропия
+по режимам Случайный, Стандартный
 
 ## Установка:  
 Зависимости: Python 3.7 и выше  
-sudo apt-get install libgmp-dev libmpfr-dev libmpc-dev  
+sudo apt-get install libgmp-dev  
+sudo apt-get install libmpfr-dev  
+sudo apt-get install libmpc-dev  
+
 sudo pip3 install simplebloomfilter  
-sudo pip3 install bitarray==1.9.2    
-sudo pip3 install bip-utils  
+sudo pip3 install bitarray==1.9.2  
+sudo pip3 install mnemonic  
+sudo pip3 install bip-utils==1.6.0  
+sudo pip3 install --user gmpy2==2.1.0b5  
+sudo pip3 install ecdsa[gmpy2]  
+  
   
 или  
 pip install -r requirements.txt  
@@ -30,14 +37,12 @@ python Cbloom.py <in file> <outfile>
   out file - файл блюм фильтра  
   
 ## Добавлен режим работы  
-#### Стандартный:  
+#### Стандартный (-m s):  
 Mnemonic->check valid->seed  
 работает с языками BIP-39  'english', 'chinese_simplified', 'chinese_traditional', 'french', 'italian', 'spanish','czech','korean','japanese'  
-#### Случайный:  
+#### Случайный (-m r):  
 Генерирует SEED 64 байта без проверок  
-#### Энтропия:  
-Entropy -> Mnemonic -> check valid-> Seed  
-Генерирует энтропию 128 бит
+
   
 ## Многопоточная версия  
   python mainMT.py -b <BIP 32 или 44> -d <директория с файлами блюм фильтра> -t <количество ядер> -m <режим работы> -c <описание сервера>  
