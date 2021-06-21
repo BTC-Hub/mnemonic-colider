@@ -4,13 +4,16 @@
 
 Что реализовано:  
 #### создание BIP39 Mnemonic для 9 языков. Возможно использовать все сразу или какие-то отдельно 
-english, chinese_simplified, chinese_traditional, french, italian, spanish, czech, korean, japanese  
+english, chinese_simplified, chinese_traditional, french, italian, spanish, czech, korean, japanese (список языков редактируйте в файле)  
 
-#### Создан поиск по 7 базам данных (BloomFilter).  
+#### Создан поиск по 11 базам данных (BloomFilter).  
 по организации BIP-32 доступно только BTC так как остальные производные.  
 по организации BIP-44 Доступно 7 баз данных  'ltc.bf','dash.bf','eth.bf','doge.bf','sv.bf','btc.bf','cash-legacy.bf'  
-можно искать во всех или только в интересующих.  
-по режимам Случайный, Стандартный
+по организации BIP-49 Доступно 2 баз данных  'ltc_m.bf', 'btc_3.bf'  
+по организации BIP-84 Доступно 2 баз данных  'ltc_ltc1.bf','btc_bc1.bf'  
+можно искать во всех или только в интересующих.   
+  
+### по режимам Случайный, Стандартный  
 
 ## Установка:  
 Зависимости: Python 3.7 и выше  
@@ -40,7 +43,7 @@ python Cbloom.py <in file> <outfile>
 ## Добавлен режим работы  
 #### Стандартный (-m s):  
 Mnemonic->check valid->seed  
-работает с языками BIP-39  'english', 'chinese_simplified', 'chinese_traditional', 'french', 'italian', 'spanish','czech','korean','japanese'  
+работает с языками 'english', 'chinese_simplified', 'chinese_traditional', 'french', 'italian', 'spanish','czech','korean','japanese'  
 #### Случайный (-m r):  
 Генерирует SEED 64 байта без проверок  
 
@@ -48,8 +51,10 @@ Mnemonic->check valid->seed
 ## Многопоточная версия  
   python mainMT.py -b <BIP 32 или 44> -d <директория с файлами блюм фильтра> -t <количество ядер> -m <режим работы> -c <описание сервера>  
   python mainMT.py -b 32 -d BF -t 2 -m s -c Local_win  
-  python mainMT.py -b 44 -d BF -t 3 -m r -c Local_linux  
-
+  python mainMT.py -b 44 -d BF -t 3 -m r -c Local_win  
+  python mainMT.py -b 49 -d BF -t 2 -m s -c Local_win  
+  python mainMT.py -b 84 -d BF -t 2 -m s -c Local_win  
+    
 ## Не забудьте настроить параметры своей почты для отправки найденных мнемоник  
     host:str = 'smtp.mail.ru'  
     port:int = 25  
