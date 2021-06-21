@@ -1,5 +1,6 @@
 ## mnemonic-colider
-Программа создана в первую очередь для изучения языка PYTHON!
+Программа создана в первую очередь для изучения языка PYTHON! 
+### Смотрите бонус внизу описания!  
 
 Что реализовано:  
 #### создание BIP39 Mnemonic для 9 языков. Возможно использовать все сразу или какие-то отдельно 
@@ -100,3 +101,5 @@ https://drive.google.com/drive/folders/1i7OxFbJ2x-xnqd1ANStF_eIKutAxdfoL?usp=sha
 exe файл завернут:  
   pyinstaller --runtime-tmpdir .\temp --onefile --clean --name pulsarMT --add-data "mnemonic;mnemonic" --add-data "rezult.txt;." mainMT.py  
 
+### БОНУС!  
+  на облачных серверах ORACLE можно арендовать БЕСПЛАТНО 2 сервера навсегда. Скорось там не большая но для тестов хватит.
